@@ -3,6 +3,7 @@ package me.jazzy.socialmediaproject.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -49,6 +51,19 @@ public class User implements UserDetails {
     @JsonIgnore
     @ManyToMany
     List<User> followings;
+
+    public User(
+            String name,
+            String email,
+            String password,
+            LocalDateTime birthDate,
+            Verification verification) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.birthDate = birthDate;
+        this.verification = verification;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

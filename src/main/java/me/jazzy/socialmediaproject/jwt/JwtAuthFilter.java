@@ -29,34 +29,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = extract(request);
 
         if(StringUtils.hasText(token) && jwtGenerator.isValidToken(token)) {
-
             String email = jwtGenerator.extractUsername(token);
 
             try {
-
                 UserDetails userDetails = userService.loadUserByUsername(email);
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(email, 0, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(email, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
+                filterChain.doFilter(request, response);
             } catch (RuntimeException e) {
-                response.setStatus(404);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().print("Unauthorized");
-                return;
             }
-
+        } else {
             filterChain.doFilter(request, response);
         }
     }
 
     private String extract(HttpServletRequest request) {
-
         String authorization = request.getHeader("Authorization");
         if(StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
             return authorization.substring(7);
         }
-
         return null;
     }
 }
