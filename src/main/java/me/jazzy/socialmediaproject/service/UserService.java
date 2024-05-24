@@ -1,6 +1,7 @@
 package me.jazzy.socialmediaproject.service;
 
 import lombok.AllArgsConstructor;
+import me.jazzy.socialmediaproject.exception.notfound.UserNotFoundException;
 import me.jazzy.socialmediaproject.model.User;
 import me.jazzy.socialmediaproject.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,12 +21,12 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("There is no such email"));
+                .orElseThrow(() -> new UserNotFoundException("There is no such email"));
     }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("There is no such email."));
+                .orElseThrow(() -> new UserNotFoundException("There is no such email."));
     }
 
     public void saveUser(User user) {

@@ -1,6 +1,8 @@
 package me.jazzy.socialmediaproject.service;
 
 import lombok.AllArgsConstructor;
+import me.jazzy.socialmediaproject.exception.badrequest.UserBadRequestException;
+import me.jazzy.socialmediaproject.exception.notfound.UserNotFoundException;
 import me.jazzy.socialmediaproject.jwt.JwtGenerator;
 import me.jazzy.socialmediaproject.model.User;
 import me.jazzy.socialmediaproject.model.Verification;
@@ -27,12 +29,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse createUser(RegisterRequest registerRequest) {
-        System.out.println("Created User kısmına girdi");
         boolean isAlreadyUsed = userRepository.findByEmail(registerRequest.getEmail())
                 .isPresent();
 
         if (isAlreadyUsed)
-            throw new RuntimeException("There is already a user with that email.");
+            throw new UserBadRequestException("There is already a user with that email.");
 
         LocalDateTime birthDate = LocalDateTime.parse(registerRequest.getBirthDate());
 
@@ -55,7 +56,7 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("There is no such email."));
+                .orElseThrow(() -> new UserNotFoundException("There is no such email."));
 
         Authentication authentication =
                 authenticationManager.authenticate(
