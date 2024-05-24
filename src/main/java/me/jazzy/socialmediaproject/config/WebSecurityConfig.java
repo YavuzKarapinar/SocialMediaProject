@@ -28,11 +28,20 @@ public class WebSecurityConfig {
     private final UserService userService;
     private final JwtGenerator jwtGenerator;
 
+    private static final String[] WHITE_LIST = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/v2/api-docs/**",
+            "/swagger-resources/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authenticationProvider(provider())
                 .authorizeHttpRequests(configurer -> {
+                    configurer.requestMatchers(WHITE_LIST)
+                            .permitAll();
                     configurer.requestMatchers(HttpMethod.POST, "/api/v*/auth/signin")
                             .permitAll();
                     configurer.requestMatchers(HttpMethod.POST, "/api/v*/auth/signup")
